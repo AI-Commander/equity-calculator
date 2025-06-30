@@ -1,0 +1,1679 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Desktop Commander - Equity Calculator</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            font-weight: 300;
+        }
+
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+
+        .share-url {
+            margin-top: 15px;
+            padding: 10px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 5px;
+            font-size: 0.9em;
+        }
+
+        .share-url button {
+            background: #3498db;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 3px;
+            cursor: pointer;
+            margin-left: 10px;
+        }
+
+        .share-url button:hover {
+            background: #2980b9;
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0;
+            min-height: 600px;
+        }
+
+        .controls {
+            padding: 30px;
+            background: #f8f9fa;
+            border-right: 1px solid #e9ecef;
+        }
+
+        .results {
+            padding: 30px;
+            background: white;
+        }
+
+        .section {
+            margin-bottom: 25px;
+        }
+
+        .section h3 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+            font-size: 1.2em;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 5px;
+        }
+
+        .person-card {
+            background: white;
+            border: 1px solid #e9ecef;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 15px;
+            transition: all 0.3s ease;
+        }
+
+        .person-card:hover {
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .person-card.disabled {
+            opacity: 0.5;
+            background: #f8f9fa;
+        }
+
+        .person-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .person-name {
+            font-weight: 600;
+            color: #2c3e50;
+            font-size: 1.1em;
+        }
+
+        .person-role {
+            font-size: 0.9em;
+            color: #7f8c8d;
+            font-style: italic;
+        }
+
+        .toggle-switch {
+            position: relative;
+            width: 50px;
+            height: 25px;
+            background: #ccc;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .toggle-switch.active {
+            background: #3498db;
+        }
+
+        .toggle-switch::after {
+            content: '';
+            position: absolute;
+            width: 21px;
+            height: 21px;
+            background: white;
+            border-radius: 50%;
+            top: 2px;
+            left: 2px;
+            transition: all 0.3s ease;
+        }
+
+        .toggle-switch.active::after {
+            left: 27px;
+        }
+
+        .input-group {
+            margin-bottom: 12px;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 5px;
+            color: #555;
+            font-weight: 500;
+            font-size: 0.9em;
+        }
+
+        .input-group input, .input-group textarea {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 0.9em;
+            transition: border-color 0.3s ease;
+            font-family: inherit;
+        }
+
+        .input-group textarea {
+            resize: vertical;
+            min-height: 60px;
+        }
+
+        .input-group input:focus, .input-group textarea:focus {
+            outline: none;
+            border-color: #3498db;
+        }
+
+        .input-group input:disabled, .input-group textarea:disabled {
+            background: #f5f5f5;
+            color: #999;
+        }
+
+        .responsibility-weights {
+            background: white;
+            border: 1px solid #e9ecef;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+
+        .weight-input {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .weight-input label {
+            flex: 1;
+            margin-right: 10px;
+            margin-bottom: 0;
+        }
+
+        .weight-input input {
+            width: 60px;
+            margin-right: 5px;
+        }
+
+        .distribution-selector {
+            background: white;
+            border: 1px solid #e9ecef;
+            border-radius: 10px;
+            padding: 15px;
+        }
+
+        .distribution-option {
+            margin-bottom: 15px;
+            cursor: pointer;
+            padding: 10px;
+            border-radius: 5px;
+            transition: background 0.3s ease;
+            border: 1px solid #e9ecef;
+        }
+
+        .distribution-option:hover {
+            background: #f8f9fa;
+        }
+
+        .distribution-option.active {
+            border-color: #3498db;
+            background: #e8f4fd;
+        }
+
+        .distribution-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 5px;
+        }
+
+        .distribution-option input[type="radio"] {
+            margin-right: 10px;
+        }
+
+        .distribution-option label {
+            cursor: pointer;
+            font-weight: 500;
+            flex: 1;
+        }
+
+        .distribution-description {
+            font-size: 0.85em;
+            color: #666;
+            margin-left: 22px;
+            margin-bottom: 8px;
+            line-height: 1.4;
+        }
+
+        .distribution-calculation {
+            font-size: 0.8em;
+            color: #0066cc;
+            margin-left: 22px;
+            background: #f0f8ff;
+            padding: 8px;
+            border-radius: 4px;
+            border-left: 3px solid #3498db;
+            line-height: 1.3;
+        }
+
+        .results-chart {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .breakdown-toggle {
+            text-align: center;
+            margin-bottom: 15px;
+        }
+
+        .breakdown-toggle button {
+            background: #3498db;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.9em;
+        }
+
+        .breakdown-toggle button:hover {
+            background: #2980b9;
+        }
+
+        .breakdown-toggle button.active {
+            background: #2c3e50;
+        }
+
+        .detailed-breakdown {
+            display: none;
+            margin-top: 20px;
+        }
+
+        .person-breakdown {
+            background: white;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+        }
+
+        .person-breakdown h5 {
+            margin: 0 0 10px 0;
+            color: #2c3e50;
+            font-size: 1.1em;
+        }
+
+        .breakdown-factors {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .factor-contribution {
+            background: #f8f9fa;
+            padding: 8px;
+            border-radius: 4px;
+            border-left: 3px solid #3498db;
+        }
+
+        .factor-name {
+            font-weight: 500;
+            font-size: 0.9em;
+            color: #2c3e50;
+        }
+
+        .factor-details {
+            font-size: 0.8em;
+            color: #666;
+            margin-top: 2px;
+        }
+
+        .factor-result {
+            font-weight: 600;
+            color: #3498db;
+            margin-top: 2px;
+        }
+
+        .total-calculation {
+            background: #e8f4fd;
+            padding: 10px;
+            border-radius: 4px;
+            border-left: 3px solid #2980b9;
+            margin-top: 10px;
+        }
+
+        .equity-bar {
+            margin-bottom: 15px;
+        }
+
+        .equity-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 5px;
+            font-weight: 500;
+        }
+
+        .equity-progress {
+            width: 100%;
+            height: 25px;
+            background: #e9ecef;
+            border-radius: 15px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .equity-fill {
+            height: 100%;
+            border-radius: 15px;
+            transition: all 0.5s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            font-size: 0.9em;
+        }
+
+        .equity-fill.eduard { background: linear-gradient(90deg, #3498db, #2980b9); }
+        .equity-fill.dmitry { background: linear-gradient(90deg, #e74c3c, #c0392b); }
+        .equity-fill.lauris { background: linear-gradient(90deg, #f39c12, #e67e22); }
+        .equity-fill.jose { background: linear-gradient(90deg, #27ae60, #229954); }
+        .equity-fill.employee { background: linear-gradient(90deg, #9b59b6, #8e44ad); }
+
+        .summary-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        .summary-table th,
+        .summary-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .summary-table th {
+            background: #f8f9fa;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        .summary-table tr:hover {
+            background: #f8f9fa;
+        }
+
+        .methodology {
+            background: #e8f4fd;
+            border: 1px solid #bee5eb;
+            border-radius: 10px;
+            padding: 15px;
+            margin-top: 20px;
+        }
+
+        .methodology h4 {
+            color: #0c5460;
+            margin-bottom: 10px;
+        }
+
+        .methodology p {
+            font-size: 0.9em;
+            line-height: 1.5;
+            color: #0c5460;
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+            
+            .controls {
+                border-right: none;
+                border-bottom: 1px solid #e9ecef;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🚀 Desktop Commander</h1>
+            <p>Co-founder Equity Calculator</p>
+            <div class="share-url">
+                <span>Share this configuration:</span>
+                <button onclick="copyUrl()">Copy URL</button>
+                <button onclick="resetToDefaults()">Reset to Defaults</button>
+            </div>
+        </div>
+
+        <div class="main-content">
+            <div class="controls">
+                <div class="section">
+                    <h3>⚖️ Role-Based Weights</h3>
+                    <div class="responsibility-weights">
+                        <div class="weight-input">
+                            <label>Technical & Infrastructure:</label>
+                            <input type="number" id="weight-technical" value="35" min="0" max="100">
+                            <span>%</span>
+                        </div>
+                        <div class="weight-input">
+                            <label>Business & Revenue:</label>
+                            <input type="number" id="weight-business" value="35" min="0" max="100">
+                            <span>%</span>
+                        </div>
+                        <div class="weight-input">
+                            <label>Product & Strategy:</label>
+                            <input type="number" id="weight-product" value="30" min="0" max="100">
+                            <span>%</span>
+                        </div>
+                        <div style="font-size: 0.8em; color: #666; margin-top: 8px;">
+                            Total: <span id="weight-total">100</span>% (for role-based model)
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section" id="custom-formula-section" style="display: none;">
+                    <h3>🔧 Custom Formula Weights</h3>
+                    <div class="responsibility-weights">
+                        <div class="weight-input">
+                            <label>Time Investment:</label>
+                            <input type="number" id="formula-time" value="40" min="0" max="100">
+                            <span>%</span>
+                        </div>
+                        <div class="weight-input">
+                            <label>Experience Level:</label>
+                            <input type="number" id="formula-experience" value="25" min="0" max="100">
+                            <span>%</span>
+                        </div>
+                        <div class="weight-input">
+                            <label>Network Value:</label>
+                            <input type="number" id="formula-network" value="15" min="0" max="100">
+                            <span>%</span>
+                        </div>
+                        <div class="weight-input">
+                            <label>Responsibility Weight:</label>
+                            <input type="number" id="formula-responsibility" value="20" min="0" max="100">
+                            <span>%</span>
+                        </div>
+                        <div style="font-size: 0.8em; color: #666; margin-top: 8px;">
+                            Total: <span id="formula-total">100</span>% (adjust how factors influence equity)
+                        </div>
+                        <div style="margin-top: 10px;">
+                            <label style="display: flex; align-items: center; font-size: 0.9em;">
+                                <input type="checkbox" id="founder-bonus" checked style="margin-right: 8px;">
+                                Apply Founder Bonus (1.5x multiplier for Eduard)
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h3>👥 Team Members</h3>
+                    
+                    <!-- Eduard -->
+                    <div class="person-card" id="eduard-card">
+                        <div class="person-header">
+                            <div>
+                                <div class="person-name">Eduard Ruzga</div>
+                                <div class="person-role">CEO • Founder</div>
+                            </div>
+                            <div class="toggle-switch active" data-person="eduard"></div>
+                        </div>
+                        <div class="input-group">
+                            <label>Time Invested (months)</label>
+                            <input type="number" id="eduard-time" value="24" min="0" max="60">
+                        </div>
+                        <div class="input-group">
+                            <label>Experience Weight (1-10)</label>
+                            <input type="number" id="eduard-experience" value="9" min="1" max="10">
+                        </div>
+                        <div class="input-group">
+                            <label>Network Value (1-10)</label>
+                            <input type="number" id="eduard-network" value="7" min="1" max="10">
+                        </div>
+                        <div class="input-group">
+                            <label>Responsibility Weight (1-10)</label>
+                            <input type="number" id="eduard-responsibility" value="10" min="1" max="10">
+                        </div>
+                        <div class="input-group">
+                            <label>Comments</label>
+                            <textarea id="eduard-comments" placeholder="Original founder, product creation, vision, public face...">Original founder, product creation, vision, public face</textarea>
+                        </div>
+                    </div>
+
+                    <!-- Dmitry -->
+                    <div class="person-card" id="dmitry-card">
+                        <div class="person-header">
+                            <div>
+                                <div class="person-name">Dmitry Sergeev</div>
+                                <div class="person-role" id="dmitry-role">CTO • Technical</div>
+                            </div>
+                            <div class="toggle-switch active" data-person="dmitry"></div>
+                        </div>
+                        <div class="input-group">
+                            <label>Time Invested (months)</label>
+                            <input type="number" id="dmitry-time" value="3" min="0" max="60">
+                        </div>
+                        <div class="input-group">
+                            <label>Experience Weight (1-10)</label>
+                            <input type="number" id="dmitry-experience" value="6" min="1" max="10">
+                        </div>
+                        <div class="input-group">
+                            <label>Network Value (1-10)</label>
+                            <input type="number" id="dmitry-network" value="5" min="1" max="10">
+                        </div>
+                        <div class="input-group">
+                            <label>Responsibility Weight (1-10)</label>
+                            <input type="number" id="dmitry-responsibility" value="7" min="1" max="10">
+                        </div>
+                        <div class="input-group">
+                            <label>Comments</label>
+                            <textarea id="dmitry-comments" placeholder="Technical contributions, client work, analytics...">Technical infrastructure, client integrations, analytics</textarea>
+                        </div>
+                    </div>
+
+                    <!-- Lauris -->
+                    <div class="person-card" id="lauris-card">
+                        <div class="person-header">
+                            <div>
+                                <div class="person-name">Lauris Lietavietis</div>
+                                <div class="person-role">CRO • Revenue</div>
+                            </div>
+                            <div class="toggle-switch active" data-person="lauris"></div>
+                        </div>
+                        <div class="input-group">
+                            <label>Time Invested (months)</label>
+                            <input type="number" id="lauris-time" value="1" min="0" max="60">
+                        </div>
+                        <div class="input-group">
+                            <label>Experience Weight (1-10)</label>
+                            <input type="number" id="lauris-experience" value="9" min="1" max="10">
+                        </div>
+                        <div class="input-group">
+                            <label>Network Value (1-10)</label>
+                            <input type="number" id="lauris-network" value="8" min="1" max="10">
+                        </div>
+                        <div class="input-group">
+                            <label>Responsibility Weight (1-10)</label>
+                            <input type="number" id="lauris-responsibility" value="8" min="1" max="10">
+                        </div>
+                        <div class="input-group">
+                            <label>Comments</label>
+                            <textarea id="lauris-comments" placeholder="Sales expertise, partnerships, fundraising...">Sales, partnerships, fundraising, GTM strategy</textarea>
+                        </div>
+                    </div>
+
+                    <!-- Jose -->
+                    <div class="person-card" id="jose-card">
+                        <div class="person-header">
+                            <div>
+                                <div class="person-name">Jose Roca</div>
+                                <div class="person-role" id="jose-role">VP Product • Senior</div>
+                            </div>
+                            <div class="toggle-switch" data-person="jose"></div>
+                        </div>
+                        <div class="input-group">
+                            <label>Time Invested (months)</label>
+                            <input type="number" id="jose-time" value="0" min="0" max="60" disabled>
+                        </div>
+                        <div class="input-group">
+                            <label>Experience Weight (1-10)</label>
+                            <input type="number" id="jose-experience" value="10" min="1" max="10" disabled>
+                        </div>
+                        <div class="input-group">
+                            <label>Network Value (1-10)</label>
+                            <input type="number" id="jose-network" value="8" min="1" max="10" disabled>
+                        </div>
+                        <div class="input-group">
+                            <label>Responsibility Weight (1-10)</label>
+                            <input type="number" id="jose-responsibility" value="9" min="1" max="10" disabled>
+                        </div>
+                        <div class="input-group">
+                            <label>Comments</label>
+                            <textarea id="jose-comments" placeholder="Product strategy, AI/ML expertise..." disabled>Product strategy, Prezi AI experience, scaling expertise</textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h3>📊 Distribution Model</h3>
+                    <div class="distribution-selector">
+                        <div class="distribution-option active" data-model="time-weighted">
+                            <div class="distribution-header">
+                                <input type="radio" id="time-weighted" name="distribution" value="time-weighted" checked>
+                                <label for="time-weighted">Time-Weighted Model</label>
+                            </div>
+                            <div class="distribution-description">Emphasizes time invested and founding contribution with experience multipliers</div>
+                            <div class="distribution-calculation">
+                                <strong>Formula:</strong> Points = Time × (1 + Experience×0.1) × (1 + Network×0.05) × (1 + Responsibility×0.1) × Founder Bonus<br>
+                                <strong>Founder Bonus:</strong> Eduard gets 1.5x multiplier for founding risk and product creation
+                            </div>
+                        </div>
+                        
+                        <div class="distribution-option" data-model="role-based">
+                            <div class="distribution-header">
+                                <input type="radio" id="role-based" name="distribution" value="role-based">
+                                <label for="role-based">Role-Based Model</label>
+                            </div>
+                            <div class="distribution-description">Based on functional responsibilities using configurable weights above</div>
+                            <div class="distribution-calculation">
+                                <strong>Formula:</strong> Uses responsibility weights to allocate by function<br>
+                                <strong>Technical:</strong> Eduard 70%, Dmitry 30% (or 15% if Jose joins as product)<br>
+                                <strong>Business:</strong> Eduard 40%, Lauris 60%<br>
+                                <strong>Product:</strong> Eduard 85%, Jose 25% (if joins), Dmitry 15% (if CPO)
+                            </div>
+                        </div>
+                        
+                        <div class="distribution-option" data-model="balanced">
+                            <div class="distribution-header">
+                                <input type="radio" id="balanced" name="distribution" value="balanced">
+                                <label for="balanced">Balanced Growth Model</label>
+                            </div>
+                            <div class="distribution-description">Optimizes for team motivation and scaling with meaningful co-founder stakes</div>
+                            <div class="distribution-calculation">
+                                <strong>Base Allocation:</strong> Eduard 55%, others split remaining based on experience/responsibility<br>
+                                <strong>Adjustments:</strong> Experience and responsibility weights fine-tune individual allocations<br>
+                                <strong>Goal:</strong> Balance founder protection with co-founder motivation
+                            </div>
+                        </div>
+                        
+                        <div class="distribution-option" data-model="conservative">
+                            <div class="distribution-header">
+                                <input type="radio" id="conservative" name="distribution" value="conservative">
+                                <label for="conservative">Conservative Founder Model</label>
+                            </div>
+                            <div class="distribution-description">Protects founder contribution while providing meaningful equity</div>
+                            <div class="distribution-calculation">
+                                <strong>Base Allocation:</strong> Eduard 70%, others receive smaller but significant stakes<br>
+                                <strong>Philosophy:</strong> Rewards founding risk and early execution heavily<br>
+                                <strong>Use Case:</strong> When founder contribution significantly outweighs co-founder additions
+                            </div>
+                        </div>
+                        
+                        <div class="distribution-option" data-model="custom">
+                            <div class="distribution-header">
+                                <input type="radio" id="custom" name="distribution" value="custom">
+                                <label for="custom">Custom Formula Model</label>
+                            </div>
+                            <div class="distribution-description">Create your own formula by adjusting the weights of different factors</div>
+                            <div class="distribution-calculation">
+                                <strong>Formula:</strong> Score = (Time×W₁ + Experience×W₂ + Network×W₃ + Responsibility×W₄) × Founder Bonus<br>
+                                <strong>Weights:</strong> Customize above to emphasize what matters most for your situation<br>
+                                <strong>Flexible:</strong> Perfect for experimenting with different equity philosophies
+                            </div>
+                        </div>
+                        
+                        <div class="distribution-option" data-model="aggressive">
+                            <div class="distribution-header">
+                                <input type="radio" id="aggressive" name="distribution" value="aggressive">
+                                <label for="aggressive">Aggressive Scaling Model</label>
+                            </div>
+                            <div class="distribution-description">Prioritizes rapid team building and fundraising with higher co-founder equity</div>
+                            <div class="distribution-calculation">
+                                <strong>Base Allocation:</strong> Eduard 45%, others get larger stakes for rapid scaling<br>
+                                <strong>Philosophy:</strong> Sacrifice founder equity for top talent acquisition<br>
+                                <strong>Use Case:</strong> When aggressive growth requires significant co-founder motivation
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="results">
+                <div class="section">
+                    <h3>📈 Equity Distribution</h3>
+                    <div class="breakdown-toggle">
+                        <button id="toggle-breakdown" onclick="toggleBreakdown()">Show Detailed Breakdown</button>
+                    </div>
+                    <div class="results-chart" id="results-chart">
+                        <!-- Dynamic results will be inserted here -->
+                    </div>
+                    <div class="detailed-breakdown" id="detailed-breakdown">
+                        <!-- Detailed breakdown will be inserted here -->
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h3>📋 Summary Table</h3>
+                    <table class="summary-table" id="summary-table">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Role</th>
+                                <th>Equity %</th>
+                                <th>Shares</th>
+                                <th>Comments</th>
+                            </tr>
+                        </thead>
+                        <tbody id="summary-tbody">
+                            <!-- Dynamic table rows will be inserted here -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="methodology" id="methodology">
+                    <h4>📝 Current Methodology</h4>
+                    <p id="methodology-description">
+                        Time-weighted model considers months invested, experience level, network value, and responsibility weight. 
+                        Founder receives premium for early risk and product creation.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Global state
+        let state = {
+            eduard: { active: true, time: 24, experience: 9, network: 7, responsibility: 10, comments: 'Original founder, product creation, vision, public face' },
+            dmitry: { active: true, time: 3, experience: 6, network: 5, responsibility: 7, comments: 'Technical infrastructure, client integrations, analytics' },
+            lauris: { active: true, time: 1, experience: 9, network: 8, responsibility: 8, comments: 'Sales, partnerships, fundraising, GTM strategy' },
+            jose: { active: false, time: 0, experience: 10, network: 8, responsibility: 9, comments: 'Product strategy, Prezi AI experience, scaling expertise' },
+            distributionModel: 'time-weighted',
+            weights: { technical: 35, business: 35, product: 30 },
+            formulaWeights: { time: 40, experience: 25, network: 15, responsibility: 20 },
+            founderBonus: true,
+            showBreakdown: false
+        };
+
+        // Store detailed calculation results for breakdown
+        let detailedResults = {};
+
+        // Distribution models
+        const distributionModels = {
+            'time-weighted': {
+                name: 'Time-Weighted Model',
+                description: 'Time-weighted model considers months invested, experience level, network value, and responsibility weight. Founder receives premium for early risk and product creation.',
+                calculate: calculateTimeWeighted
+            },
+            'role-based': {
+                name: 'Role-Based Model',
+                description: 'Allocation based on functional responsibilities using configurable weights. Technical, Business, and Product & Strategy percentages are distributed by role contributions.',
+                calculate: calculateRoleBased
+            },
+            'balanced': {
+                name: 'Balanced Growth Model',
+                description: 'Optimized for team motivation and future scaling. Balances founder contribution with meaningful co-founder equity to drive growth.',
+                calculate: calculateBalanced
+            },
+            'conservative': {
+                name: 'Conservative Founder Model',
+                description: 'Protects founder contribution while providing meaningful equity. Prioritizes founding risk and early execution.',
+                calculate: calculateConservative
+            },
+            'aggressive': {
+                name: 'Aggressive Scaling Model',
+                description: 'Prioritizes rapid team building and fundraising. Higher equity for co-founders to attract top talent and scale quickly.',
+                calculate: calculateAggressive
+            },
+            'custom': {
+                name: 'Custom Formula Model',
+                description: 'Fully customizable formula where you control the weight of time investment, experience, network, and responsibility factors.',
+                calculate: calculateCustom
+            }
+        };
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            loadStateFromUrl();
+            setupEventListeners();
+            updateRoles();
+            calculateAndRender();
+        });
+
+        function setupEventListeners() {
+            // Toggle switches
+            document.querySelectorAll('.toggle-switch').forEach(toggle => {
+                toggle.addEventListener('click', function() {
+                    const person = this.getAttribute('data-person');
+                    state[person].active = !state[person].active;
+                    this.classList.toggle('active');
+                    updatePersonCard(person);
+                    updateRoles();
+                    calculateAndRender();
+                    updateUrl();
+                });
+            });
+
+            // Input fields
+            ['eduard', 'dmitry', 'lauris', 'jose'].forEach(person => {
+                ['time', 'experience', 'network', 'responsibility'].forEach(field => {
+                    const input = document.getElementById(`${person}-${field}`);
+                    input.addEventListener('input', function() {
+                        state[person][field] = parseInt(this.value) || 0;
+                        calculateAndRender();
+                        updateUrl();
+                    });
+                });
+
+                // Comments
+                const commentsInput = document.getElementById(`${person}-comments`);
+                commentsInput.addEventListener('input', function() {
+                    state[person].comments = this.value;
+                    calculateAndRender();
+                    updateUrl();
+                });
+            });
+
+            // Weight inputs
+            ['technical', 'business', 'product'].forEach(weight => {
+                const input = document.getElementById(`weight-${weight}`);
+                input.addEventListener('input', function() {
+                    state.weights[weight] = parseInt(this.value) || 0;
+                    updateWeightTotal();
+                    calculateAndRender();
+                    updateUrl();
+                });
+            });
+
+            // Formula weight inputs
+            ['time', 'experience', 'network', 'responsibility'].forEach(weight => {
+                const input = document.getElementById(`formula-${weight}`);
+                input.addEventListener('input', function() {
+                    state.formulaWeights[weight] = parseInt(this.value) || 0;
+                    updateFormulaTotal();
+                    calculateAndRender();
+                    updateUrl();
+                });
+            });
+
+            // Founder bonus checkbox
+            const founderBonusCheckbox = document.getElementById('founder-bonus');
+            founderBonusCheckbox.addEventListener('change', function() {
+                state.founderBonus = this.checked;
+                calculateAndRender();
+                updateUrl();
+            });
+
+            // Distribution model options
+            document.querySelectorAll('.distribution-option').forEach(option => {
+                option.addEventListener('click', function() {
+                    const model = this.getAttribute('data-model');
+                    const radio = this.querySelector('input[type="radio"]');
+                    radio.checked = true;
+                    
+                    // Update visual state
+                    document.querySelectorAll('.distribution-option').forEach(opt => opt.classList.remove('active'));
+                    this.classList.add('active');
+                    
+                    // Show/hide custom formula section
+                    const customSection = document.getElementById('custom-formula-section');
+                    if (model === 'custom') {
+                        customSection.style.display = 'block';
+                    } else {
+                        customSection.style.display = 'none';
+                    }
+                    
+                    state.distributionModel = model;
+                    calculateAndRender();
+                    updateUrl();
+                });
+            });
+        }
+
+        function updateWeightTotal() {
+            const total = state.weights.technical + state.weights.business + state.weights.product;
+            document.getElementById('weight-total').textContent = total;
+        }
+
+        function updateFormulaTotal() {
+            const total = state.formulaWeights.time + state.formulaWeights.experience + state.formulaWeights.network + state.formulaWeights.responsibility;
+            document.getElementById('formula-total').textContent = total;
+        }
+
+        function updatePersonCard(person) {
+            const card = document.getElementById(`${person}-card`);
+            const inputs = card.querySelectorAll('input, textarea');
+            
+            if (state[person].active) {
+                card.classList.remove('disabled');
+                inputs.forEach(input => input.disabled = false);
+            } else {
+                card.classList.add('disabled');
+                inputs.forEach(input => input.disabled = true);
+            }
+        }
+
+        function updateRoles() {
+            const joseActive = state.jose.active;
+            
+            // Update Dmitry's role
+            const dmitryRole = document.getElementById('dmitry-role');
+            dmitryRole.textContent = joseActive ? 'CPO • Product' : 'CTO • Technical';
+            
+            // Update Jose's role
+            const joseRole = document.getElementById('jose-role');
+            joseRole.textContent = joseActive ? 'VP Product • Senior' : 'VP Product • Senior';
+        }
+
+        // URL state management
+        function updateUrl() {
+            const params = new URLSearchParams();
+            
+            // Add state to URL
+            Object.keys(state).forEach(key => {
+                if (key === 'weights' || key === 'formulaWeights') {
+                    params.set(key, JSON.stringify(state[key]));
+                } else if (typeof state[key] === 'object') {
+                    params.set(key, JSON.stringify(state[key]));
+                } else {
+                    params.set(key, state[key]);
+                }
+            });
+            
+            const newUrl = window.location.pathname + '?' + params.toString();
+            window.history.replaceState({}, '', newUrl);
+        }
+
+        function loadStateFromUrl() {
+            const params = new URLSearchParams(window.location.search);
+            
+            params.forEach((value, key) => {
+                try {
+                    if (key === 'weights' || key === 'formulaWeights' || ['eduard', 'dmitry', 'lauris', 'jose'].includes(key)) {
+                        const parsed = JSON.parse(value);
+                        if (key === 'weights') {
+                            state.weights = { ...state.weights, ...parsed };
+                        } else if (key === 'formulaWeights') {
+                            state.formulaWeights = { ...state.formulaWeights, ...parsed };
+                        } else {
+                            state[key] = { ...state[key], ...parsed };
+                        }
+                    } else if (key === 'founderBonus') {
+                        state.founderBonus = value === 'true';
+                    } else {
+                        state[key] = value;
+                    }
+                } catch (e) {
+                    console.warn('Could not parse URL parameter:', key, value);
+                }
+            });
+            
+            // Update UI elements
+            Object.keys(state).forEach(key => {
+                if (['eduard', 'dmitry', 'lauris', 'jose'].includes(key)) {
+                    const person = state[key];
+                    ['time', 'experience', 'network', 'responsibility'].forEach(field => {
+                        const input = document.getElementById(`${key}-${field}`);
+                        if (input) input.value = person[field];
+                    });
+                    
+                    const commentsInput = document.getElementById(`${key}-comments`);
+                    if (commentsInput) commentsInput.value = person.comments || '';
+                    
+                    const toggle = document.querySelector(`[data-person="${key}"]`);
+                    if (toggle) {
+                        if (person.active) {
+                            toggle.classList.add('active');
+                        } else {
+                            toggle.classList.remove('active');
+                        }
+                    }
+                    
+                    updatePersonCard(key);
+                }
+            });
+            
+            // Update weights
+            Object.keys(state.weights).forEach(weight => {
+                const input = document.getElementById(`weight-${weight}`);
+                if (input) input.value = state.weights[weight];
+            });
+
+            // Update formula weights
+            Object.keys(state.formulaWeights).forEach(weight => {
+                const input = document.getElementById(`formula-${weight}`);
+                if (input) input.value = state.formulaWeights[weight];
+            });
+
+            // Update founder bonus
+            const founderBonusCheckbox = document.getElementById('founder-bonus');
+            if (founderBonusCheckbox) founderBonusCheckbox.checked = state.founderBonus;
+
+            // Update distribution model
+            const modelRadio = document.getElementById(state.distributionModel);
+            if (modelRadio) {
+                modelRadio.checked = true;
+                const option = document.querySelector(`[data-model="${state.distributionModel}"]`);
+                if (option) {
+                    document.querySelectorAll('.distribution-option').forEach(opt => opt.classList.remove('active'));
+                    option.classList.add('active');
+                }
+            }
+
+            // Show/hide custom formula section
+            const customSection = document.getElementById('custom-formula-section');
+            if (state.distributionModel === 'custom') {
+                customSection.style.display = 'block';
+            } else {
+                customSection.style.display = 'none';
+            }
+            
+            updateWeightTotal();
+            updateFormulaTotal();
+        }
+
+        function copyUrl() {
+            navigator.clipboard.writeText(window.location.href).then(() => {
+                alert('URL copied to clipboard!');
+            });
+        }
+
+        function resetToDefaults() {
+            window.location.href = window.location.pathname;
+        }
+
+        // Calculation functions
+        function calculateTimeWeighted() {
+            const results = {};
+            const breakdown = {};
+            let totalPoints = 0;
+
+            // Calculate points for each person
+            Object.keys(state).forEach(person => {
+                if (person === 'distributionModel' || person === 'weights' || person === 'formulaWeights' || person === 'founderBonus' || person === 'showBreakdown') return;
+                
+                const data = state[person];
+                if (!data.active) {
+                    results[person] = 0;
+                    breakdown[person] = { factors: {}, total: 0 };
+                    return;
+                }
+
+                // Calculate individual factors
+                const timeWeight = data.time;
+                const experienceMultiplier = 1 + (data.experience - 1) * 0.1; // 1.0 to 1.9
+                const networkMultiplier = 1 + (data.network - 1) * 0.05; // 1.0 to 1.45
+                const responsibilityMultiplier = 1 + (data.responsibility - 1) * 0.1; // 1.0 to 1.9
+                const founderBonus = person === 'eduard' ? 1.5 : 1.0;
+                
+                // Step-by-step calculation for breakdown
+                const basePoints = timeWeight;
+                const afterExperience = basePoints * experienceMultiplier;
+                const afterNetwork = afterExperience * networkMultiplier;
+                const afterResponsibility = afterNetwork * responsibilityMultiplier;
+                const finalPoints = afterResponsibility * founderBonus;
+                
+                breakdown[person] = {
+                    factors: {
+                        time: { value: data.time, contribution: basePoints, description: `${data.time} months invested` },
+                        experience: { value: data.experience, multiplier: experienceMultiplier, contribution: afterExperience - basePoints, description: `Experience rating ${data.experience}/10 (${((experienceMultiplier - 1) * 100).toFixed(0)}% bonus)` },
+                        network: { value: data.network, multiplier: networkMultiplier, contribution: afterNetwork - afterExperience, description: `Network rating ${data.network}/10 (${((networkMultiplier - 1) * 100).toFixed(0)}% bonus)` },
+                        responsibility: { value: data.responsibility, multiplier: responsibilityMultiplier, contribution: afterResponsibility - afterNetwork, description: `Responsibility rating ${data.responsibility}/10 (${((responsibilityMultiplier - 1) * 100).toFixed(0)}% bonus)` },
+                        founder: { multiplier: founderBonus, contribution: finalPoints - afterResponsibility, description: person === 'eduard' ? 'Founder bonus (50% multiplier)' : 'No founder bonus' }
+                    },
+                    total: finalPoints
+                };
+                
+                results[person] = finalPoints;
+                totalPoints += finalPoints;
+            });
+
+            // Convert to percentages and reserve employee pool
+            const employeePoolPercent = 15;
+            const availablePercent = 100 - employeePoolPercent;
+            
+            Object.keys(results).forEach(person => {
+                if (results[person] > 0) {
+                    const percentage = (results[person] / totalPoints) * availablePercent;
+                    results[person] = percentage;
+                    
+                    // Update breakdown with final percentages
+                    if (breakdown[person]) {
+                        Object.keys(breakdown[person].factors).forEach(factor => {
+                            breakdown[person].factors[factor].percentageContribution = 
+                                (breakdown[person].factors[factor].contribution / totalPoints) * availablePercent;
+                        });
+                    }
+                }
+            });
+
+            results.employeePool = employeePoolPercent;
+            detailedResults = { results, breakdown, model: 'time-weighted' };
+            return results;
+        }
+
+        function calculateRoleBased() {
+            const results = { eduard: 0, dmitry: 0, lauris: 0, jose: 0, employeePool: 15 };
+            const breakdown = {};
+            const joseActive = state.jose.active;
+            
+            // Use configurable weights
+            const technical = state.weights.technical;
+            const business = state.weights.business;
+            const product = state.weights.product;
+            
+            const people = ['eduard', 'dmitry', 'lauris', 'jose'];
+            people.forEach(person => {
+                if (!state[person].active) {
+                    breakdown[person] = { factors: {}, total: 0 };
+                    return;
+                }
+                
+                breakdown[person] = {
+                    factors: {
+                        technical: { contribution: 0, description: 'Technical & Infrastructure contribution' },
+                        business: { contribution: 0, description: 'Business & Revenue contribution' },
+                        product: { contribution: 0, description: 'Product & Strategy contribution' }
+                    },
+                    total: 0
+                };
+            });
+            
+            if (state.eduard.active) {
+                const techContrib = technical * 0.7;
+                const businessContrib = business * 0.4;
+                const productContrib = product * 0.85;
+                
+                results.eduard += techContrib + businessContrib + productContrib;
+                
+                breakdown.eduard.factors.technical.contribution = techContrib;
+                breakdown.eduard.factors.business.contribution = businessContrib;
+                breakdown.eduard.factors.product.contribution = productContrib;
+                breakdown.eduard.total = results.eduard;
+            }
+            
+            if (state.dmitry.active) {
+                if (joseActive) {
+                    // Dmitry as CPO
+                    const techContrib = technical * 0.15;
+                    const productContrib = product * 0.25;
+                    results.dmitry += techContrib + productContrib;
+                    breakdown.dmitry.factors.technical.contribution = techContrib;
+                    breakdown.dmitry.factors.product.contribution = productContrib;
+                } else {
+                    // Dmitry as CTO
+                    const techContrib = technical * 0.3;
+                    results.dmitry += techContrib;
+                    breakdown.dmitry.factors.technical.contribution = techContrib;
+                }
+                breakdown.dmitry.total = results.dmitry;
+            }
+            
+            if (state.lauris.active) {
+                const businessContrib = business * 0.6;
+                results.lauris += businessContrib;
+                breakdown.lauris.factors.business.contribution = businessContrib;
+                breakdown.lauris.total = results.lauris;
+            }
+            
+            if (state.jose.active) {
+                const techContrib = technical * 0.15;
+                const productContrib = product * 0.25;
+                results.jose += techContrib + productContrib;
+                breakdown.jose.factors.technical.contribution = techContrib;
+                breakdown.jose.factors.product.contribution = productContrib;
+                breakdown.jose.total = results.jose;
+            }
+            
+            // Update breakdown with percentage contributions
+            people.forEach(person => {
+                if (breakdown[person] && results[person] > 0) {
+                    Object.keys(breakdown[person].factors).forEach(factor => {
+                        const contrib = breakdown[person].factors[factor].contribution;
+                        breakdown[person].factors[factor].percentageContribution = contrib;
+                        breakdown[person].factors[factor].description = `${factor.charAt(0).toUpperCase() + factor.slice(1)} role weight: ${contrib.toFixed(1)}%`;
+                    });
+                }
+            });
+            
+            detailedResults = { results, breakdown, model: 'role-based' };
+            return results;
+        }
+
+        function calculateBalanced() {
+            const baseAllocations = {
+                eduard: 55,
+                dmitry: state.jose.active ? 15 : 20,
+                lauris: state.jose.active ? 15 : 20,
+                jose: state.jose.active ? 15 : 0,
+                employeePool: 12
+            };
+            
+            const results = adjustForExperienceAndResponsibility(baseAllocations);
+            
+            // Create simple breakdown for balanced model
+            const breakdown = {};
+            ['eduard', 'dmitry', 'lauris', 'jose'].forEach(person => {
+                if (state[person].active) {
+                    breakdown[person] = {
+                        factors: {
+                            base: { 
+                                contribution: baseAllocations[person], 
+                                description: `Base allocation for balanced growth model: ${baseAllocations[person]}%`,
+                                percentageContribution: results[person] || 0
+                            }
+                        },
+                        total: results[person] || 0
+                    };
+                } else {
+                    breakdown[person] = { factors: {}, total: 0 };
+                }
+            });
+            
+            detailedResults = { results, breakdown, model: 'balanced' };
+            return results;
+        }
+
+        function calculateConservative() {
+            const baseAllocations = {
+                eduard: 70,
+                dmitry: state.jose.active ? 10 : 15,
+                lauris: state.jose.active ? 10 : 15,
+                jose: state.jose.active ? 10 : 0,
+                employeePool: 15
+            };
+            
+            const results = adjustForExperienceAndResponsibility(baseAllocations);
+            
+            // Create simple breakdown for conservative model
+            const breakdown = {};
+            ['eduard', 'dmitry', 'lauris', 'jose'].forEach(person => {
+                if (state[person].active) {
+                    breakdown[person] = {
+                        factors: {
+                            base: { 
+                                contribution: baseAllocations[person], 
+                                description: `Base allocation for conservative founder model: ${baseAllocations[person]}%`,
+                                percentageContribution: results[person] || 0
+                            }
+                        },
+                        total: results[person] || 0
+                    };
+                } else {
+                    breakdown[person] = { factors: {}, total: 0 };
+                }
+            });
+            
+            detailedResults = { results, breakdown, model: 'conservative' };
+            return results;
+        }
+
+        function calculateAggressive() {
+            const baseAllocations = {
+                eduard: 45,
+                dmitry: state.jose.active ? 18 : 22,
+                lauris: state.jose.active ? 17 : 25,
+                jose: state.jose.active ? 20 : 0,
+                employeePool: 8
+            };
+            
+            const results = adjustForExperienceAndResponsibility(baseAllocations);
+            
+            // Create simple breakdown for aggressive model
+            const breakdown = {};
+            ['eduard', 'dmitry', 'lauris', 'jose'].forEach(person => {
+                if (state[person].active) {
+                    breakdown[person] = {
+                        factors: {
+                            base: { 
+                                contribution: baseAllocations[person], 
+                                description: `Base allocation for aggressive scaling model: ${baseAllocations[person]}%`,
+                                percentageContribution: results[person] || 0
+                            }
+                        },
+                        total: results[person] || 0
+                    };
+                } else {
+                    breakdown[person] = { factors: {}, total: 0 };
+                }
+            });
+            
+            detailedResults = { results, breakdown, model: 'aggressive' };
+            return results;
+        }
+
+        function adjustForExperienceAndResponsibility(allocations) {
+            const activeMembers = ['eduard', 'dmitry', 'lauris', 'jose'].filter(person => state[person].active);
+            
+            // Calculate experience and responsibility adjustments
+            let totalExp = 0;
+            let totalResp = 0;
+            activeMembers.forEach(person => {
+                totalExp += state[person].experience;
+                totalResp += state[person].responsibility;
+            });
+            
+            // Apply minor adjustments based on experience and responsibility
+            activeMembers.forEach(person => {
+                const expWeight = state[person].experience / totalExp;
+                const respWeight = state[person].responsibility / totalResp;
+                const avgWeight = (expWeight + respWeight) / 2;
+                
+                // Small adjustment factor (5% max swing)
+                const adjustment = (avgWeight - (1 / activeMembers.length)) * 0.05;
+                allocations[person] = Math.max(0, allocations[person] * (1 + adjustment));
+            });
+            
+            return adjustForActiveMembers(allocations);
+        }
+
+        function calculateCustom() {
+            const results = {};
+            const breakdown = {};
+            let totalPoints = 0;
+
+            // Normalize the formula weights (in case they don't add to 100)
+            const totalWeight = state.formulaWeights.time + state.formulaWeights.experience + 
+                               state.formulaWeights.network + state.formulaWeights.responsibility;
+            
+            const normalizedWeights = {
+                time: totalWeight > 0 ? state.formulaWeights.time / totalWeight : 0.25,
+                experience: totalWeight > 0 ? state.formulaWeights.experience / totalWeight : 0.25,
+                network: totalWeight > 0 ? state.formulaWeights.network / totalWeight : 0.25,
+                responsibility: totalWeight > 0 ? state.formulaWeights.responsibility / totalWeight : 0.25
+            };
+
+            // Calculate points for each person using custom formula
+            Object.keys(state).forEach(person => {
+                if (person === 'distributionModel' || person === 'weights' || person === 'formulaWeights' || person === 'founderBonus' || person === 'showBreakdown') return;
+                
+                const data = state[person];
+                if (!data.active) {
+                    results[person] = 0;
+                    breakdown[person] = { factors: {}, total: 0 };
+                    return;
+                }
+
+                // Normalize each factor to 0-100 scale for fair comparison
+                const normalizedTime = Math.min(data.time / 60 * 100, 100); // Max 60 months = 100
+                const normalizedExperience = data.experience * 10; // 1-10 scale to 10-100
+                const normalizedNetwork = data.network * 10; // 1-10 scale to 10-100
+                const normalizedResponsibility = data.responsibility * 10; // 1-10 scale to 10-100
+
+                // Calculate individual factor contributions
+                const timeContribution = normalizedTime * normalizedWeights.time;
+                const experienceContribution = normalizedExperience * normalizedWeights.experience;
+                const networkContribution = normalizedNetwork * normalizedWeights.network;
+                const responsibilityContribution = normalizedResponsibility * normalizedWeights.responsibility;
+
+                // Calculate weighted score
+                const score = timeContribution + experienceContribution + networkContribution + responsibilityContribution;
+                
+                // Apply founder bonus if enabled
+                const founderBonus = (person === 'eduard' && state.founderBonus) ? 1.5 : 1.0;
+                const finalPoints = score * founderBonus;
+
+                breakdown[person] = {
+                    factors: {
+                        time: { 
+                            value: data.time, 
+                            weight: normalizedWeights.time,
+                            normalized: normalizedTime,
+                            contribution: timeContribution, 
+                            description: `${data.time} months × ${(normalizedWeights.time * 100).toFixed(0)}% weight = ${timeContribution.toFixed(1)} points` 
+                        },
+                        experience: { 
+                            value: data.experience, 
+                            weight: normalizedWeights.experience,
+                            normalized: normalizedExperience,
+                            contribution: experienceContribution, 
+                            description: `${data.experience}/10 rating × ${(normalizedWeights.experience * 100).toFixed(0)}% weight = ${experienceContribution.toFixed(1)} points` 
+                        },
+                        network: { 
+                            value: data.network, 
+                            weight: normalizedWeights.network,
+                            normalized: normalizedNetwork,
+                            contribution: networkContribution, 
+                            description: `${data.network}/10 rating × ${(normalizedWeights.network * 100).toFixed(0)}% weight = ${networkContribution.toFixed(1)} points` 
+                        },
+                        responsibility: { 
+                            value: data.responsibility, 
+                            weight: normalizedWeights.responsibility,
+                            normalized: normalizedResponsibility,
+                            contribution: responsibilityContribution, 
+                            description: `${data.responsibility}/10 rating × ${(normalizedWeights.responsibility * 100).toFixed(0)}% weight = ${responsibilityContribution.toFixed(1)} points` 
+                        },
+                        founder: { 
+                            multiplier: founderBonus, 
+                            contribution: finalPoints - score, 
+                            description: person === 'eduard' && state.founderBonus ? 'Founder bonus (50% multiplier)' : 'No founder bonus' 
+                        }
+                    },
+                    total: finalPoints
+                };
+                
+                results[person] = finalPoints;
+                totalPoints += finalPoints;
+            });
+
+            // Convert to percentages and reserve employee pool
+            const employeePoolPercent = 15;
+            const availablePercent = 100 - employeePoolPercent;
+            
+            Object.keys(results).forEach(person => {
+                if (results[person] > 0) {
+                    const percentage = (results[person] / totalPoints) * availablePercent;
+                    results[person] = percentage;
+                    
+                    // Update breakdown with final percentages
+                    if (breakdown[person]) {
+                        Object.keys(breakdown[person].factors).forEach(factor => {
+                            breakdown[person].factors[factor].percentageContribution = 
+                                (breakdown[person].factors[factor].contribution / totalPoints) * availablePercent;
+                        });
+                    }
+                }
+            });
+
+            results.employeePool = employeePoolPercent;
+            detailedResults = { results, breakdown, model: 'custom' };
+            return results;
+        }
+
+        function adjustForActiveMembers(allocations) {
+            const activeMembers = ['eduard', 'dmitry', 'lauris', 'jose'].filter(person => state[person].active);
+            const totalActive = activeMembers.reduce((sum, person) => sum + allocations[person], 0);
+            
+            // Redistribute inactive member equity to active members proportionally
+            let totalInactive = 0;
+            ['eduard', 'dmitry', 'lauris', 'jose'].forEach(person => {
+                if (!state[person].active) {
+                    totalInactive += allocations[person];
+                    allocations[person] = 0;
+                }
+            });
+            
+            // Redistribute inactive equity proportionally to active members
+            activeMembers.forEach(person => {
+                if (totalActive > 0) {
+                    allocations[person] += (allocations[person] / totalActive) * totalInactive;
+                }
+            });
+            
+            return allocations;
+        }
+
+        function calculateAndRender() {
+            const model = distributionModels[state.distributionModel];
+            const results = model.calculate();
+            
+            renderResults(results);
+            renderSummaryTable(results);
+            updateMethodology(model);
+            
+            // Render breakdown if showing
+            if (state.showBreakdown) {
+                renderDetailedBreakdown();
+            }
+        }
+
+        function toggleBreakdown() {
+            state.showBreakdown = !state.showBreakdown;
+            const breakdownDiv = document.getElementById('detailed-breakdown');
+            const toggleButton = document.getElementById('toggle-breakdown');
+            
+            if (state.showBreakdown) {
+                breakdownDiv.style.display = 'block';
+                toggleButton.textContent = 'Hide Detailed Breakdown';
+                toggleButton.classList.add('active');
+                renderDetailedBreakdown();
+            } else {
+                breakdownDiv.style.display = 'none';
+                toggleButton.textContent = 'Show Detailed Breakdown';
+                toggleButton.classList.remove('active');
+            }
+        }
+
+        function renderDetailedBreakdown() {
+            if (!detailedResults.breakdown) return;
+            
+            const breakdownDiv = document.getElementById('detailed-breakdown');
+            const people = [
+                { key: 'eduard', name: 'Eduard Ruzga', role: 'CEO', class: 'eduard' },
+                { key: 'dmitry', name: 'Dmitry Sergeev', role: state.jose.active ? 'CPO' : 'CTO', class: 'dmitry' },
+                { key: 'lauris', name: 'Lauris Lietavietis', role: 'CRO', class: 'lauris' },
+                { key: 'jose', name: 'Jose Roca', role: 'VP Product', class: 'jose' }
+            ];
+
+            breakdownDiv.innerHTML = '';
+            
+            people.forEach(person => {
+                const personData = detailedResults.breakdown[person.key];
+                if (!personData || !state[person.key].active) return;
+                
+                const personDiv = document.createElement('div');
+                personDiv.className = 'person-breakdown';
+                
+                const finalEquity = detailedResults.results[person.key] || 0;
+                
+                let factorsHtml = '';
+                Object.keys(personData.factors).forEach(factorKey => {
+                    const factor = personData.factors[factorKey];
+                    if (factor.contribution > 0 || factorKey === 'founder') {
+                        factorsHtml += `
+                            <div class="factor-contribution">
+                                <div class="factor-name">${factorKey.charAt(0).toUpperCase() + factorKey.slice(1)}</div>
+                                <div class="factor-details">${factor.description}</div>
+                                <div class="factor-result">+${(factor.percentageContribution || 0).toFixed(2)}% equity</div>
+                            </div>
+                        `;
+                    }
+                });
+                
+                personDiv.innerHTML = `
+                    <h5>${person.name} (${person.role}) - ${finalEquity.toFixed(1)}% Total Equity</h5>
+                    <div class="breakdown-factors">
+                        ${factorsHtml}
+                    </div>
+                    <div class="total-calculation">
+                        <strong>Total Calculation:</strong> All factors combined = ${finalEquity.toFixed(1)}% equity
+                    </div>
+                `;
+                
+                breakdownDiv.appendChild(personDiv);
+            });
+        }
+
+        function renderResults(results) {
+            const chart = document.getElementById('results-chart');
+            const people = [
+                { key: 'eduard', name: 'Eduard Ruzga', role: 'CEO', class: 'eduard' },
+                { key: 'dmitry', name: 'Dmitry Sergeev', role: state.jose.active ? 'CPO' : 'CTO', class: 'dmitry' },
+                { key: 'lauris', name: 'Lauris Lietavietis', role: 'CRO', class: 'lauris' },
+                { key: 'jose', name: 'Jose Roca', role: 'VP Product', class: 'jose' },
+                { key: 'employeePool', name: 'Employee Pool', role: 'Future Hires', class: 'employee' }
+            ];
+
+            chart.innerHTML = '';
+            
+            people.forEach(person => {
+                const percentage = results[person.key] || 0;
+                if (percentage > 0) {
+                    const barDiv = document.createElement('div');
+                    barDiv.className = 'equity-bar';
+                    
+                    barDiv.innerHTML = `
+                        <div class="equity-label">
+                            <span>${person.name} (${person.role})</span>
+                            <span>${percentage.toFixed(1)}%</span>
+                        </div>
+                        <div class="equity-progress">
+                            <div class="equity-fill ${person.class}" style="width: ${percentage}%">
+                                ${percentage.toFixed(1)}%
+                            </div>
+                        </div>
+                    `;
+                    
+                    chart.appendChild(barDiv);
+                }
+            });
+        }
+
+        function renderSummaryTable(results) {
+            const tbody = document.getElementById('summary-tbody');
+            const totalShares = 10000000; // 10M shares
+            
+            const people = [
+                { key: 'eduard', name: 'Eduard Ruzga', role: 'CEO • Founder' },
+                { key: 'dmitry', name: 'Dmitry Sergeev', role: state.jose.active ? 'CPO • Product' : 'CTO • Technical' },
+                { key: 'lauris', name: 'Lauris Lietavietis', role: 'CRO • Revenue' },
+                { key: 'jose', name: 'Jose Roca', role: 'VP Product • Senior' },
+                { key: 'employeePool', name: 'Employee Pool', role: 'Future Team' }
+            ];
+
+            tbody.innerHTML = '';
+            
+            people.forEach(person => {
+                const percentage = results[person.key] || 0;
+                if (percentage > 0) {
+                    const shares = Math.round((percentage / 100) * totalShares);
+                    const row = document.createElement('tr');
+                    
+                    const comments = person.key !== 'employeePool' ? (state[person.key]?.comments || '') : 'Reserved for future team members';
+                    
+                    row.innerHTML = `
+                        <td>${person.name}</td>
+                        <td>${person.role}</td>
+                        <td>${percentage.toFixed(1)}%</td>
+                        <td>${shares.toLocaleString()}</td>
+                        <td style="font-size: 0.8em; color: #666;">${comments}</td>
+                    `;
+                    
+                    tbody.appendChild(row);
+                }
+            });
+        }
+
+        function updateMethodology(model) {
+            document.getElementById('methodology-description').textContent = model.description;
+        }
+
+        // Initialize disabled states
+        updatePersonCard('jose');
+    </script>
+</body>
+</html>
